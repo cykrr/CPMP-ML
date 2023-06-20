@@ -320,22 +320,6 @@ def get_layout_from_ann_state(b, S, H, N):
 
 # Si el estado obtenido al aplicar el movimiento se puede resolver en $N-1$ pasos por el greedy $A_k=1$
 # En cualquier otro caso: $A_k=0$
-def generate_yp(layout, N=15):
-  A=[]
-  copy_lay = deepcopy(layout)
-  for i in range(len(layout.stacks)):
-    for j in range(len(layout.stacks)):
-      if(i!=j):
-        layout.move((i,j))
-        print(f"Move {i} {j}")
-        val=greedy(layout, v = True)
-        if val < N: print("SIRVE:D")
-        if(val>-1): val=N-val
-        A.append(max(0,val))
-      layout = deepcopy(copy_lay)
-
-  return A
-
 def generate_y(layout, N=15):
   S=len(layout.stacks)
   A=np.zeros(S*(S-1))
@@ -355,6 +339,49 @@ def generate_y(layout, N=15):
         n+=1
 
   return A
+
+## VERSION ANTIGUA
+
+# def generate_yp(layout, N=15):
+#   A=[]
+#   copy_lay = deepcopy(layout)
+#   for i in range(len(layout.stacks)):
+#     for j in range(len(layout.stacks)):
+#       if(i!=j):
+#         layout.move((i,j))
+#         print(f"Move {i} {j}")
+#         val=greedy(layout, v = True)
+#         if val < N: print("SIRVE:D")
+#         if(val>-1): val=N-val
+#         A.append(max(0,val))
+#       layout = deepcopy(copy_lay)
+
+#   return A
+
+def gen_movement_matrix(y, S):
+    m = np.zeros(shape = (S, S));
+    n=0
+    for i in range(S):
+        for j in range(S):
+            if i == j: 
+                continue
+            m[i, j] = y[n]
+            n+=1
+    return m
+
+def permutate_y(y, S, perm):
+    m = gen_movement_matrix(y, S)
+    print(m)
+    m = m[perm].T[perm].T
+    print(m)
+    A=np.zeros(shape= (S*(S-1)))
+    n=0
+    for i in range(S):
+        for j in range(S):
+            if i == j: continue
+            A[n] = m[i, j]
+            n+=1
+    return A
 
 ## GREEDY+MODEL
 def get_move(act, S=5, H=5):
