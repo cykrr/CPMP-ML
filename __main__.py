@@ -198,6 +198,18 @@ else:
   with open(greedy_training_data_file, "rb") as file:
       print ("Loading data..")
       [x_train,y_train] = pickle.load(file)
+    
+# init tf
+device_name = tf.test.gpu_device_name()
+print("device_name", device_name)
+with tf.device(device_name):
+  Fmodel=generate_model() # predice steps
+  Fmodel.compile(
+          loss=BinaryCrossentropy(),
+          optimizer=optimizers.Adam(learning_rate=0.001),
+          metrics=['mse']
+    )
+
    
 
 ## If input file doesn't exist
